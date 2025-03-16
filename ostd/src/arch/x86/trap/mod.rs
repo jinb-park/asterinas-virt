@@ -22,7 +22,7 @@ mod syscall;
 
 use align_ext::AlignExt;
 use cfg_if::cfg_if;
-use log::debug;
+use log::{debug, error};
 
 use super::ex_table::ExTable;
 use crate::{
@@ -239,7 +239,6 @@ extern "sysv64" fn trap_handler(f: &mut TrapFrame) {
         f.rflags as u64 & x86_64::registers::rflags::RFlags::INTERRUPT_FLAG.bits() > 0;
 
     match CpuException::to_cpu_exception(f.trap_num as u16) {
-        #[cfg(feature = "cvm_guest")]
         Some(CpuException::VIRTUALIZATION_EXCEPTION) => {
             let ve_info = tdcall::get_veinfo().expect("#VE handler: fail to get VE info\n");
             // We need to enable interrupts only after `tdcall::get_veinfo` is called
@@ -252,6 +251,7 @@ extern "sysv64" fn trap_handler(f: &mut TrapFrame) {
         }
         Some(CpuException::PAGE_FAULT) => {
             let page_fault_addr = x86_64::registers::control::Cr2::read_raw();
+
             enable_local_if(was_irq_enabled);
             // The actual user space implementation should be responsible
             // for providing mechanism to treat the 0 virtual address.
@@ -265,8 +265,8 @@ extern "sysv64" fn trap_handler(f: &mut TrapFrame) {
         Some(exception) => {
             enable_local_if(was_irq_enabled);
             panic!(
-                "cannot handle kernel CPU exception: {:?}, trapframe: {:?}",
-                exception, f
+                "cannot handle kernel CPU exception: {:?}, trapframe: {:?}, rip: {:X}",
+                exception, f, f.rip
             );
         }
         None => {

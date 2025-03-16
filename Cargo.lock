@@ -225,6 +225,8 @@ dependencies = [
  "time",
  "typeflags",
  "typeflags-util",
+ "x86",
+ "x86_64 0.14.13",
  "xmas-elf 0.8.0",
 ]
 

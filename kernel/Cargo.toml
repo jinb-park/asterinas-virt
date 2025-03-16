@@ -61,6 +61,10 @@ cfg-if = "1.0"
 # TODO: fork this crate to rewrite all the (unnecessary) unsafe usage
 fixed = "1.28.0"
 
+# for hyp test
+x86_64 = "0.14.13"
+x86 = "0.52.0"
+
 [target.riscv64gc-unknown-none-elf.dependencies]
 riscv = { version = "0.11.1", features = ["s-mode"] }
 

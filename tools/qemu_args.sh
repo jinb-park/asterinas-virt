@@ -45,9 +45,9 @@ else
 fi
 
 COMMON_QEMU_ARGS="\
-    -cpu Icelake-Server,+x2apic \
+    -cpu host,+x2apic \
     -smp ${SMP:-1} \
-    -m ${MEM:-8G} \
+    -m ${MEM:-2G} \
     --no-reboot \
     -nographic \
     -display none \

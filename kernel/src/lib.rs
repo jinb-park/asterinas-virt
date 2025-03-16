@@ -5,7 +5,7 @@
 
 #![no_std]
 #![no_main]
-#![deny(unsafe_code)]
+//#![deny(unsafe_code)]
 #![expect(incomplete_features)]
 #![feature(btree_cursors)]
 #![feature(btree_extract_if)]
@@ -71,6 +71,8 @@ pub mod time;
 mod util;
 pub(crate) mod vdso;
 pub mod vm;
+pub mod hyp;
+pub mod vmcs;
 
 #[ostd::main]
 #[controlled]
@@ -78,6 +80,9 @@ pub fn main() {
     ostd::early_println!("[kernel] OSTD initialized. Preparing components.");
     component::init_all(component::parse_metadata!()).unwrap();
     init();
+
+    // Run test hypervisor code~!
+    hyp::start_hypervisor();
 
     // Spawn all AP idle threads.
     ostd::boot::smp::register_ap_entry(ap_init);
